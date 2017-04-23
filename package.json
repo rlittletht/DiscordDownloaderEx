@@ -1,0 +1,18 @@
+{
+  "name": "discorddownloader",
+  "version": "0.0.1",
+  "description": "Downloads images from channels in discord!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "SilentDeath1",
+  "license": "ISC",
+  "dependencies": {
+    "image-downloader": "^3.2.1",
+    "limiter": "^1.1.0",
+    "promise": "^7.1.1",
+    "snekfetch": "^3.1.3"
+  }
+}
