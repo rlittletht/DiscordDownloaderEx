@@ -64,7 +64,7 @@ var displayServers = (token) =>
                                                                                                      if (serverIndex >= 0 && serverIndex < results.length)
                                                                                                      {
                                                                                                          savedServerId = userGuilds[serverIndex].id;
-                                                                                                         displayChannels(token, userGuilds[serverIndex].id);
+                                                                                                         fetchAndDisplayChannels(token, userGuilds[serverIndex].id);
                                                                                                      }
                                                                                                      else
                                                                                                      {
@@ -81,7 +81,7 @@ var displayServers = (token) =>
 }
 
 
-var displayChannels = (token, serverid) =>
+var fetchAndDisplayChannels = (token, serverid) =>
 {
     guilds.getGuildChannels(token, serverid)
     .then((channels) =>
@@ -115,7 +115,7 @@ var fetchImages = (token, channelid, channellastmessage) =>
               if (messageRes.code == 50001)
               {
                   console.error("> You lack the permission to access this channel!");
-                  displayChannels(token, savedServerId)
+                  fetchAndDisplayChannels(token, savedServerId)
               }
               if (messageRes.length > 0)
               {
@@ -159,14 +159,14 @@ var downloadImages = (token) =>
                                                                                                                                                           console.log("> All images downloaded, back to channel list!")
                                                                                                                                                           setTimeout(() =>
                                                                                                                                                                      {
-                                                                                                                                                                         displayChannels(token, savedServerId)}, 1000)
+                                                                                                                                                                         fetchAndDisplayChannels(token, savedServerId)}, 1000)
                                                                                                                                                       })
                                                                                           }
                                                                                           else
                                                                                           {
                                                                                               setTimeout(() =>
                                                                                                          {
-                                                                                                             displayChannels(token, savedServerId)}, 1000)
+                                                                                                             fetchAndDisplayChannels(token, savedServerId)}, 1000)
                                                                                           }
                                                                                       })
 }
