@@ -80,11 +80,20 @@ var displayServers = (token) =>
     })
 }
 
+var describeChannel = (channel) =>
+{
+    if (channel.name)
+        return `${channel.name} (${channel.id})`;
+
+    return `unnamed channel (${channel.id})`;
+}
+
+
 var displayChannels = (token, channels) =>
 {
     for(c in channels)
     {
-        console.log(`[${c}] - ${channels[c].name} (${channels[c].id})`);
+        console.log(`[${c}] - ${describeChannel(channels[c])}`);
     }
     readLine(`> What channel do you want to download from? [0-${channels.length-1}]\n`).then((channelIndex) =>
                                                                                              {
