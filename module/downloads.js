@@ -38,7 +38,7 @@ function startDownloads(imageList, folder){
               }
             })
             .catch((error)=>{
-              console.log(`${i} downloaded, failed to download: ${counter}/${maxCounter}!`);
+              console.log(`${i} downloaded, failed to download: ${counter}/${maxCounter} [${error}]!`);
               counter++;
               if(counter == maxCounter){
                 resolve();
