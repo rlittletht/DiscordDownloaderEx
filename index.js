@@ -80,31 +80,33 @@ var displayServers = (token) =>
     })
 }
 
+var displayChannels = (token, channels) =>
+{
+    for(c in channels)
+    {
+        console.log(`[${c}] - ${channels[c].name}`);
+    }
+    readLine(`> What channel do you want to download from? [0-${channels.length-1}]\n`).then((channelIndex) =>
+                                                                                             {
+                                                                                                 if (channelIndex >= 0 && channelIndex < channels.length)
+                                                                                                 {
+                                                                                                     savedChannelName = channels[channelIndex].name;
+                                                                                                     images = [ ];
+                                                                                                     lastMessage = "";
+                                                                                                     fetchImages(token, channels[channelIndex].id, channels[channelIndex].last_message_id);
+                                                                                                 }
+                                                                                             })
+}
 
 var fetchAndDisplayChannels = (token, serverid) =>
 {
     guilds.getGuildChannels(token, serverid)
-    .then((channels) =>
-          {
-              for (c in channels)
-              {
-                  console.log(`[${c}] - ${channels[c].name}`);
-              }
-              readLine(`> What channel do you want to download from? [0-${channels.length-1}]\n`).then((channelIndex) =>
-                                                                                                       {
-                                                                                                           if (channelIndex >= 0 && channelIndex < channels.length)
-                                                                                                           {
-                                                                                                               savedChannelName = channels[channelIndex].name;
-                                                                                                               images = [ ];
-                                                                                                               lastMessage = "";
-                                                                                                               fetchImages(token, channels[channelIndex].id, channels[channelIndex].last_message_id);
-                                                                                                           }
-                                                                                                       })
-          })
+    .then((channels) => displayChannels(token, channels))
     .catch((error)=>{
         console.log(error);
     })
 }
+
 var loops = 0;
 var fetchImages = (token, channelid, channellastmessage) =>
 {
