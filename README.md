@@ -1,5 +1,7 @@
-# DiscordDownloader
-A NPM command line application for downloading images from Discord guilds.
+# DiscordDownloaderEx
+A NPM command line application for downloading images from Discord guilds (and soon personal chats and DMs)
+
+This code originally from https://github.com/SilentDeath1/DiscordDownloader
 
 # Installation
 - Clone / Download zip
