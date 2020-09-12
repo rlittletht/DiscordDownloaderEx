@@ -84,7 +84,7 @@ var displayChannels = (token, channels) =>
 {
     for(c in channels)
     {
-        console.log(`[${c}] - ${channels[c].name}`);
+        console.log(`[${c}] - ${channels[c].name} (${channels[c].id})`);
     }
     readLine(`> What channel do you want to download from? [0-${channels.length-1}]\n`).then((channelIndex) =>
                                                                                              {
@@ -100,11 +100,18 @@ var displayChannels = (token, channels) =>
 
 var fetchAndDisplayChannels = (token, serverid) =>
 {
-    guilds.getGuildChannels(token, serverid)
-    .then((channels) => displayChannels(token, channels))
-    .catch((error)=>{
-        console.log(error);
-    })
+    if (serverid === '!!user')
+    {
+        user.getUserChannels(token)
+        .then((channels) => displayChannels(token, channels))
+        .catch((error)=>{ console.log(error); })
+    }
+    else
+    {
+        guilds.getGuildChannels(token, serverid)
+            .then((channels) => displayChannels(token, channels))
+            .catch((error)=>{ console.log(error); })
+    }
 }
 
 var loops = 0;
