@@ -3,7 +3,8 @@ var readline = require("readline");
 var authenticate = require("./module/authenticate"),
     guilds       = require("./module/guilds"),
     messages     = require("./module/messages"),
-    downloads    = require("./module/downloads");
+    downloads    = require("./module/downloads"),
+    user         = require("./module/user")
 
 var userGuilds = [ ],
     savedServerId = "",
@@ -34,6 +35,7 @@ var login = () =>
                                                                       authenticate.authenticate(username, password)
                                                                       .then((token) =>
                                                                             {
+                                                                                console.log('\033[2J');
                                                                                 console.log(`> Login successful!`);
                                                                                 //console.log(`> Login successful! Token:${token}`);
                                                                                 displayServers(token);
@@ -52,6 +54,7 @@ var displayServers = (token) =>
     .then((results) =>
           {
               var userGuilds = results;
+              userGuilds.push({ name: "User channels", id: "!!user" });
               for (i in userGuilds)
               {
                   console.log(`[${i}] - ${results[i].name}`);
@@ -77,9 +80,9 @@ var displayServers = (token) =>
     })
 }
 
+
 var displayChannels = (token, serverid) =>
 {
-    console.log('\033[2J');
     guilds.getGuildChannels(token, serverid)
     .then((channels) =>
           {
