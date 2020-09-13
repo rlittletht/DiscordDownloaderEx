@@ -1,46 +1,54 @@
 
-const snekfetch = require("snekfetch")
+import fetch from 'cross-fetch';
 const rateLimiter = require('limiter').RateLimiter
-const limiter = new rateLimiter(1,2500);
+const limiter = new rateLimiter(1, 2500);
+
+// const snekfetch = require("snekfetch")
 
 var userToken = "",
     authenticated = false;
 
-function isAuthenticated()
+/*----------------------------------------------------------------------------
+	%%Function: isAuthenticated
+----------------------------------------------------------------------------*/
+export function isAuthenticated(): boolean
 {
     return authenticated;
 }
 
-function authenticate(username, password)
+async function removeLimiterToken(cTokens: number): Promise<void>
 {
-    return new Promise((resolve, reject) => {
-        limiter.removeTokens(1, () => {
-            snekfetch.post('https://discordapp.com/api/v6/auth/login')
-            .send({ "email": username, "password": password })
-            .then((res) => { authenticated = true; userToken = res.body.token; resolve(res.body.token)})
-            .catch((e)=>{authenticated = false; reject(e)})
-        })
-    })
+    return new Promise((resolve, reject) => limiter.removeTokens(1, () => { resolve() }));
 }
-function deAuthenticate()
+
+/*----------------------------------------------------------------------------
+	%%Function: authenticate
+----------------------------------------------------------------------------*/
+export async function authenticate(username: string, password: string): Promise<string>
 {
-    return new Promise((resolve, reject) => {
-        limiter.removeTokens(1, () => {
-            snekfetch.post('https://discordapp.com/api/v6/auth/logout')
-            .set("Authorization", userToken)
-            .send({ "provider": null, "token": null })
-            .then((res) => { authenticated = false; userToken = ""; resolve(true)})
-            .catch((e)=>{reject(e)})
-        })
-    })
-}
-function token()
-{
+    await removeLimiterToken(1);
+
+    let result: Response = await fetch('https://discordapp.com/api/v6/auth/login',
+        {
+            method: "POST",
+            body: JSON.stringify(
+                {
+                    "email": username,
+                    "password": password
+                }),
+            headers:
+            {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json' // ,
+            }
+        });
+
+    if (result.status != 200)
+        throw `failed: ${result.status} ${result.statusText}`;
+
+    authenticated = true;
+    let jsonResult = await result.json();
+    userToken = jsonResult.token;
+
     return userToken;
 }
-
-
-module.exports.isAuth = isAuthenticated;
-module.exports.authenticate = authenticate;
-module.exports.deauth = deAuthenticate;
-module.exports.token = token;

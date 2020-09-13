@@ -15,6 +15,7 @@
   "license": "mit",
   "dependencies": {
     "@types/node": "^14.10.1",
+    "cross-fetch": "^3.0.6",
     "image-downloader": "^3.2.1",
     "limiter": "^1.1.0",
     "promise": "^7.1.1",

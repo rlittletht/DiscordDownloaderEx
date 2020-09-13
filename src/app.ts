@@ -1,7 +1,8 @@
 
 import * as Input from "./module/input";
+import * as Authenticate from "./module/authenticate";
 
-var authenticate = require("./module/authenticate");
+// var authenticate = require("./module/authenticate");
 
 /*----------------------------------------------------------------------------
 	%%Function: login
@@ -17,7 +18,7 @@ async function login(): Promise<string>
 
     try
     {
-        token = await authenticate.authenticate(username, password);
+        token = await Authenticate.authenticate(username, password);
     }
     catch (error)
     {
@@ -36,7 +37,9 @@ async function login(): Promise<string>
 async function main()
 {
     let token: string = await login();
+
     console.log(`> Login successful! Token:${token}`);
+    Input.close();
 }
 
 main();
