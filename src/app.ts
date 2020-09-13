@@ -9,32 +9,32 @@ async function test()
     console.log(`msg: ${msg}`);
 }
 
-async function login() : Promise<void>
+async function login() : Promise<string>
 {
     let username : string = await Input.input("> Username:");
     let password : string = await Input.input("> Password:");
 
-    authenticate.authenticate(username, password)
-        .then((token) =>
-        {
-            // console.log('\033[2J');
-            console.log(`> Login successful!`);
-            console.log(`> Login successful! Token:${token}`);
-            // displayServers(token);
-        })
-        .catch((error)=>
-        {
-            console.log(`> Login unsuccessful!`);
-            login();
-        });
+    let token : string = null;
+
+    try
+    {
+        token = await authenticate.authenticate(username, password);
+    }
+    catch (error)
+    {
+        console.log(`> Login unsuccessful! (${error})`);
+        return await login();
+    }
+
+    // console.log('\033[2J');
+    console.log(`> Login successful!`);
+    return token;
 }
 
 async function main()
 {
-    let message: string = 'Hello World4';
-    console.log(message);
-
-    login();
+    let token: string = await login();
+    console.log(`> Login successful! Token:${token}`);
 }
 
 main();
