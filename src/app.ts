@@ -9,26 +9,24 @@ async function test()
     console.log(`msg: ${msg}`);
 }
 
-var login = () =>
+async function login() : Promise<void>
 {
-    Input.input("> Username:").then((username) =>
-                                 {
-                                     Input.input("> Password:").then((password) =>
-                                                                  {
-                                                                      authenticate.authenticate(username, password)
-                                                                      .then((token) =>
-                                                                            {
-//                                                                                console.log('\033[2J');
-                                                                                console.log(`> Login successful!`);
-                                                                                console.log(`> Login successful! Token:${token}`);
-                                                                                // displayServers(token);
-                                                                            }).catch((error)=>
-                                                                      {
-                                                                          console.log(`> Login unsuccessful!`);
-                                                                          login();
-                                                                      })
-                                                                  })
-                                 })
+    let username : string = await Input.input("> Username:");
+    let password : string = await Input.input("> Password:");
+
+    authenticate.authenticate(username, password)
+        .then((token) =>
+        {
+            // console.log('\033[2J');
+            console.log(`> Login successful!`);
+            console.log(`> Login successful! Token:${token}`);
+            // displayServers(token);
+        })
+        .catch((error)=>
+        {
+            console.log(`> Login unsuccessful!`);
+            login();
+        });
 }
 
 async function main()
