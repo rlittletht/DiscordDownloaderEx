@@ -40,14 +40,14 @@ var images = [];
 
 async function fetchImages(limiter: TsLimiter.ITsLimiter,
     token: string,
-    serverid: string,
-    channelid: string,
-    channelfolder: string,
-    channellastmessage: string): Promise<void>
+    serverId: string,
+    channelId: string,
+    channelFolder: string,
+    messageIdFilterBefore: string): Promise<void>
 {
-    console.log(`fetchImages: lastmessageid = ${channellastmessage}`);
+    console.log(`fetchImages: lastmessageid = ${messageIdFilterBefore}`);
     loops++;
-    let messageRes: any = await Messages.GetChannelMessages(limiter, token, channelid, channellastmessage, null, 20);
+    let messageRes: any = await Messages.GetChannelMessages(limiter, token, channelId, messageIdFilterBefore, null, 20);
 
     if (messageRes.code == 50001)
     {
@@ -62,7 +62,7 @@ async function fetchImages(limiter: TsLimiter.ITsLimiter,
             `messageRes.length=${messageRes.length}; first id=${messageRes[0].id}, last id=${messageRes[messageRes.length
                 - 1].id}`);
 
-        channellastmessage = messageRes[messageRes.length - 1].id;
+        messageIdFilterBefore = messageRes[messageRes.length - 1].id;
         for (var m in messageRes)
         {
             for (var a in messageRes[m].attachments)
@@ -74,16 +74,16 @@ async function fetchImages(limiter: TsLimiter.ITsLimiter,
         if (/*images.length <= 50 |*/ messageRes.length > 0)
         {
             console.log(`fetchImages recursion: ${messageRes.length}`);
-            await fetchImages(limiter, token, serverid, channelid, channelfolder, channellastmessage);
+            await fetchImages(limiter, token, serverId, channelId, channelFolder, messageIdFilterBefore);
         }
         else
         {
-            await downloadImages(channelid, channelfolder, serverid, images, token);
+            await downloadImages(channelId, channelFolder, serverId, images, token);
         }
     }
     else
     {
-        await downloadImages(channelid, channelfolder, serverid, images, token);
+        await downloadImages(channelId, channelFolder, serverId, images, token);
     }
 }
 
