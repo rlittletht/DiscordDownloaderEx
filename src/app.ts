@@ -34,34 +34,6 @@ async function login(): Promise<string>
 }
 
 /*----------------------------------------------------------------------------
-	%%Function: GetServerIdToDownload
-----------------------------------------------------------------------------*/
-async function GetServerIdToDownload(limiter: TsLimiter.ITsLimiter, token: string): Promise<string>
-{
-    let userGuilds = await Guilds.getGuilds(limiter, token);
-
-    userGuilds.push({ name: "User channels", id: "!!user" });
-    for (var i in userGuilds)
-    {
-        console.log(`[${i}] - ${userGuilds[i].name}`);
-    }
-
-    let serverIndex: string = await Input.input(`Which server do you want to download? [0-${userGuilds.length - 1}] `);
-
-    let iServer: number = parseInt(serverIndex);
-
-    if (iServer >= 0 && iServer < userGuilds.length)
-    {
-        return userGuilds[iServer].id;
-    }
-    else
-    {
-        return null;
-    }
-}
-
-
-/*----------------------------------------------------------------------------
 	%%Function: main
 ----------------------------------------------------------------------------*/
 async function main()
@@ -69,7 +41,7 @@ async function main()
     let token: string = await login();
 
     console.log(`> Login successful! Token:${token}`);
-    let serverId: string = await GetServerIdToDownload(_itsLimiter, token);
+    let serverId: string = await Guilds.GetServerIdToDownload(_itsLimiter, token);
 
     console.log(`server id to download: ${serverId}`);
     //fetchAndDisplayChannels(token, userGuilds[serverIndex].id);
