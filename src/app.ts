@@ -1,8 +1,9 @@
 
 import * as Input from "./module/input";
 import * as Authenticate from "./module/authenticate";
+import * as TsLimiter from "./module/tsLimiter";
 
-// var authenticate = require("./module/authenticate");
+let _itsLimiter: TsLimiter.ITsLimiter = TsLimiter.CreateLimiter(1, 2500);
 
 /*----------------------------------------------------------------------------
 	%%Function: login
@@ -18,7 +19,7 @@ async function login(): Promise<string>
 
     try
     {
-        token = await Authenticate.authenticate(username, password);
+        token = await Authenticate.authenticate(_itsLimiter, username, password);
     }
     catch (error)
     {

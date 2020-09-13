@@ -1,9 +1,6 @@
 
+import * as TsLimiter from './tsLimiter';
 import fetch from 'cross-fetch';
-const rateLimiter = require('limiter').RateLimiter
-const limiter = new rateLimiter(1, 2500);
-
-// const snekfetch = require("snekfetch")
 
 var userToken = "",
     authenticated = false;
@@ -16,17 +13,12 @@ export function isAuthenticated(): boolean
     return authenticated;
 }
 
-async function removeLimiterToken(cTokens: number): Promise<void>
-{
-    return new Promise((resolve, reject) => limiter.removeTokens(1, () => { resolve() }));
-}
-
 /*----------------------------------------------------------------------------
 	%%Function: authenticate
 ----------------------------------------------------------------------------*/
-export async function authenticate(username: string, password: string): Promise<string>
+export async function authenticate(limiter: TsLimiter.ITsLimiter, username: string, password: string): Promise<string>
 {
-    await removeLimiterToken(1);
+    await limiter.RemoveTokens(1);
 
     let result: Response = await fetch('https://discordapp.com/api/v6/auth/login',
         {
