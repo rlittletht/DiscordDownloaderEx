@@ -3,6 +3,8 @@ import * as Input from "./module/input";
 import * as Authenticate from "./module/authenticate";
 import * as TsLimiter from "./module/tsLimiter";
 import * as Guilds from "./module/guilds";
+import * as Download from "./module/download";
+import * as Messages from "./module/messages";
 
 let _itsLimiter: TsLimiter.ITsLimiter = TsLimiter.CreateLimiter(1, 2500);
 
@@ -33,6 +35,67 @@ async function login(): Promise<string>
     return token;
 }
 
+var loops = 0;
+var lastMessage = "";
+var images = [];
+
+async function fetchImages(limiter: TsLimiter.ITsLimiter,
+    token: string,
+    serverid: string,
+    channelid: string,
+    channelfolder: string,
+    channellastmessage: string): Promise<void>
+{
+    loops++;
+    let messageRes: any = await Messages.GetChannelMessages(limiter, token, channelid, lastMessage, false, 2);
+
+    if (messageRes.code == 50001)
+    {
+        console.error("> You lack the permission to access this channel!");
+        throw `die`;
+        // fetchAndDisplayChannels(token, savedServerId)
+    }
+    if (messageRes.length > 0)
+    {
+        lastMessage = messageRes[messageRes.length - 1].id;
+        for (var m in messageRes)
+        {
+            for (var a in messageRes[m].attachments)
+            {
+                var url = messageRes[m].attachments[a].url;
+                images.push(url)
+            }
+        }
+        if (/*images.length <= 50 |*/ messageRes.length > 0)
+        {
+            console.log(`fetchImages recursion: ${messageRes.length}`);
+            await fetchImages(limiter, token, serverid, channelid, channelfolder, lastMessage);
+        }
+        else
+        {
+            await downloadImages(channelid, channelfolder, serverid, images, token);
+        }
+    }
+    else
+    {
+        await downloadImages(channelid, channelfolder, serverid, images, token);
+    }
+}
+
+async function downloadImages(channelName: string, channelFolder: string, serverId: string, images: any, token: string):
+    Promise<void>
+{
+    let resp: string = await Input.input(`${images.length} images in found, proceed to download? [Y/N] `);
+
+    if (resp == "y" || resp == "Y")
+    {
+        console.log("> Downloading!")
+        await Download.StartDownloads(_itsLimiter, images, channelFolder);
+        console.log("> All images downloaded, back to channel list!");
+    }
+    else {}
+}
+
 /*----------------------------------------------------------------------------
 	%%Function: main
 ----------------------------------------------------------------------------*/
@@ -49,6 +112,14 @@ async function main()
     console.log(
         `choice: ${channelChoiceInfo.ChannelId}/${channelChoiceInfo.FolderName}/${channelChoiceInfo.LastMessageId}`);
     //fetchAndDisplayChannels(token, userGuilds[serverIndex].id);
+    lastMessage = "";
+    await fetchImages(_itsLimiter,
+        token,
+        serverId,
+        channelChoiceInfo.ChannelId,
+        channelChoiceInfo.FolderName,
+        channelChoiceInfo.LastMessageId);
+
     Input.close();
 }
 
