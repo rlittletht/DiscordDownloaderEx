@@ -5,15 +5,18 @@ export async function GetChannelMessages(
     limiter: TsLimiter.ITsLimiter,
     token: string,
     channelId: string,
-    before,
-    after,
+    messageIdFilterBefore: string,
+    messageIdFilterAfter: string,
     limit: number = 50) : Promise<any>
 {
-    console.log(`getting channel messages for channel ${channelId} (before: ${before}, after: ${after}`);
+    console.log(`getting channel messages for channel ${channelId} (before: ${messageIdFilterBefore}, after: ${messageIdFilterAfter}`);
 
     let query: string = "?limit=" + limit;
-    before ? query += "&before=" + before : query += "";
-    after ? query += "&after=" + after : query += "";
+
+    if (messageIdFilterBefore != null)
+        query += `&before=${messageIdFilterBefore}`;
+    else if (messageIdFilterAfter != null)
+        query += `&after=${messageIdFilterAfter}`;
 
     await limiter.RemoveTokens(1);
 

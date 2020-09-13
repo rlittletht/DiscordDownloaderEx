@@ -47,7 +47,7 @@ async function fetchImages(limiter: TsLimiter.ITsLimiter,
     channellastmessage: string): Promise<void>
 {
     loops++;
-    let messageRes: any = await Messages.GetChannelMessages(limiter, token, channelid, lastMessage, false, 2);
+    let messageRes: any = await Messages.GetChannelMessages(limiter, token, channelid, lastMessage, null, 2);
 
     if (messageRes.code == 50001)
     {
