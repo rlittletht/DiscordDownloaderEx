@@ -1,18 +1,23 @@
 {
-  "name": "discorddownloader",
+  "name": "discorddownloaderex",
   "version": "0.0.1",
   "description": "Downloads images from channels in discord!",
-  "main": "index.js",
+  "main": "./dist/app.js",
   "scripts": {
+	"build": "tsc --build",
+	"watch": "start tsc --watch",
+	"clean": "tsc --build --clean",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start-tsc": "node ./dist/app.js",
     "start": "node index.js"
   },
-  "author": "SilentDeath1",
-  "license": "ISC",
+  "author": "rlittletht",
+  "license": "mit",
   "dependencies": {
     "image-downloader": "^3.2.1",
     "limiter": "^1.1.0",
     "promise": "^7.1.1",
-    "snekfetch": "^3.1.3"
+    "snekfetch": "^3.1.3",
+    "typescript": "^4.0.2"
   }
 }

@@ -4,6 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 downloads/
+dist/
 
 # ignore secret configs (passwords and such)
 *secret*.config
