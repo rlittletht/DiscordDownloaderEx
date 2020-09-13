@@ -1,5 +1,5 @@
 
-import * as TsLimiter from './tsLimiter';
+const rateLimiter = require('limiter').RateLimiter;
 
 /*----------------------------------------------------------------------------
 	%%Function: ITsLimiter
