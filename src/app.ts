@@ -52,7 +52,7 @@ async function GetServerIdToDownload(limiter: TsLimiter.ITsLimiter, token: strin
 
     if (iServer >= 0 && iServer < userGuilds.length)
     {
-        return serverIdLast;
+        return userGuilds[iServer].id;
     }
     else
     {
