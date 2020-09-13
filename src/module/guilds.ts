@@ -1,6 +1,7 @@
 import * as TsLimiter from './tsLimiter';
 import fetch from 'cross-fetch';
 import * as Input from "./input";
+import * as User from "./user";
 
 /*
 export async function getGuild(limiter, token, guildId): Promise<any>
@@ -164,15 +165,16 @@ export async function GetChannelChoiceInfoToDownload(channels): Promise<ChannelC
 export async function GetChannelToDownload(limiter: TsLimiter.ITsLimiter, token: string, serverid: string):
     Promise<ChannelChoiceInfo>
 {
-    /*    if (serverid === '!!user')
-        {
-            user.getUserChannels(token)
-                .then((channels) => displayChannels(token, channels))
-                .catch((error) => { console.log(error); })
-        }
-        else */
+    let channels: any = null;
+
+    if (serverid === '!!user')
     {
-        let channels = await GetGuildChannels(limiter, token, serverid);
-        return await GetChannelChoiceInfoToDownload(channels);
+        channels = await User.GetUserChannels(limiter, token);
     }
+    else
+    {
+        channels = await GetGuildChannels(limiter, token, serverid);
+    }
+
+    return await GetChannelChoiceInfoToDownload(channels);
 }
