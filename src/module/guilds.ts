@@ -38,7 +38,7 @@ function getGuildChannels(token, guildId)
 
 */
 
-async function getGuilds(limiter: TsLimiter.ITsLimiter, token: string): Promise<any>
+export async function getGuilds(limiter: TsLimiter.ITsLimiter, token: string): Promise<any>
 {
     await limiter.RemoveTokens(1);
     let result: Response = await fetch('https://discordapp.com/api/users/@me/guilds',
@@ -55,35 +55,5 @@ async function getGuilds(limiter: TsLimiter.ITsLimiter, token: string): Promise<
     return await result.json();
 }
 
-export async function displayServers(limiter: TsLimiter.ITsLimiter, token: string): Promise<any>
-{
-    let userGuilds = await getGuilds(limiter, token);
 
-    userGuilds.push({ name: "User channels", id: "!!user" });
-    for (var i in userGuilds)
-    {
-        console.log(`[${i}] - ${userGuilds[i].name}`);
-    }
 
-/*    readLine(`> Which server do you want to download? [0-${results.length - 1}]\n`).then((serverIndex) =>
-            {
-                if (serverIndex >= 0 && serverIndex < results.length)
-                {
-                    savedServerId = userGuilds[serverIndex].id;
-                    fetchAndDisplayChannels(token, userGuilds[serverIndex].id);
-                }
-                else
-                {
-                    //Recursion
-                    //displayServers(token);
-                }
-            });
-        })
-        .catch((error) =>
-        {
-            console.error(`Error retrieving guild list!`);
-            console.log(error);
-            //Possibly crash out or retry.
-        })
-        */
-}
