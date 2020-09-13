@@ -3,18 +3,17 @@ import * as Input from "./module/input";
 
 var authenticate = require("./module/authenticate");
 
-async function test()
+/*----------------------------------------------------------------------------
+	%%Function: login
+	
+    login to discord and return a bearer token
+----------------------------------------------------------------------------*/
+async function login(): Promise<string>
 {
-    var msg = await Input.input("foo? ");
-    console.log(`msg: ${msg}`);
-}
+    let username: string = await Input.input("> Username:");
+    let password: string = await Input.input("> Password:");
 
-async function login() : Promise<string>
-{
-    let username : string = await Input.input("> Username:");
-    let password : string = await Input.input("> Password:");
-
-    let token : string = null;
+    let token: string = null;
 
     try
     {
@@ -31,6 +30,9 @@ async function login() : Promise<string>
     return token;
 }
 
+/*----------------------------------------------------------------------------
+	%%Function: main
+----------------------------------------------------------------------------*/
 async function main()
 {
     let token: string = await login();
