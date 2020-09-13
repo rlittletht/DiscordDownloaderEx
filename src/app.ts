@@ -2,6 +2,7 @@
 import * as Input from "./module/input";
 import * as Authenticate from "./module/authenticate";
 import * as TsLimiter from "./module/tsLimiter";
+import * as Guilds from "./module/guilds";
 
 let _itsLimiter: TsLimiter.ITsLimiter = TsLimiter.CreateLimiter(1, 2500);
 
@@ -40,6 +41,7 @@ async function main()
     let token: string = await login();
 
     console.log(`> Login successful! Token:${token}`);
+    await Guilds.displayServers(_itsLimiter, token);
     Input.close();
 }
 
