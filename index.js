@@ -114,11 +114,11 @@ var displayChannels = (token, channels) =>
     {
         console.log(`[${c}] - ${describeChannel(channels[c])}`);
     }
-    readLine(`> What channel do you want to download from? [0-${channels.length-1}]\n`).then((channelIndex) =>
+    readLine(`> What channel do you want to download from? [0-${channels.length-1}]\n`).then(async (channelIndex) =>
                                                                                              {
                                                                                                  if (channelIndex >= 0 && channelIndex < channels.length)
                                                                                                  {
-                                                                                                     savedChannelName = folderNameForChannel(channels[channelIndex]);
+                                                                                                     savedChannelName = await folderNameForChannel(channels[channelIndex]);
                                                                                                      images = [ ];
                                                                                                      lastMessage = "";
                                                                                                      fetchImages(token, channels[channelIndex].id, channels[channelIndex].last_message_id);

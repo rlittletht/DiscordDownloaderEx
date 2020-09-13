@@ -5,6 +5,8 @@ const limiter = new rateLimiter(1,2500);
 
 function getChannelMessages(token, channelId, before, after, limit = 50)
 {
+    console.log(`getting channel messages for channel ${channelId}`);
+
     var query = "?limit=" + limit;
     before ? query += "&before=" + before : query += "";
     after ? query += "&after=" + after : query += "";
