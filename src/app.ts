@@ -44,6 +44,10 @@ async function main()
     let serverId: string = await Guilds.GetServerIdToDownload(_itsLimiter, token);
 
     console.log(`server id to download: ${serverId}`);
+    let channelChoiceInfo: Guilds.ChannelChoiceInfo = await Guilds.GetChannelToDownload(_itsLimiter, token, serverId);
+
+    console.log(
+        `choice: ${channelChoiceInfo.ChannelId}/${channelChoiceInfo.FolderName}/${channelChoiceInfo.LastMessageId}`);
     //fetchAndDisplayChannels(token, userGuilds[serverIndex].id);
     Input.close();
 }
