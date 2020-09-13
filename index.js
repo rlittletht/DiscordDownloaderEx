@@ -85,7 +85,26 @@ var describeChannel = (channel) =>
     if (channel.name)
         return `${channel.name} (${channel.id})`;
 
-    return `unnamed channel (${channel.id})`;
+    var userNames = "@Me";
+
+    if (channel.recipients)
+    {
+        for(i in channel.recipients)
+            userNames += `, ${channel.recipients[i].username}`;
+    }
+
+
+    return `unnamed between (${userNames})`;
+}
+
+var folderNameForChannel = async (channel) =>
+{
+    if (channel.name)
+        return channel.name;
+
+    var folderName = await readLine(`> Cannot automatically generate folder name for channel. Destination folder name? `);
+
+    return folderName;
 }
 
 
@@ -99,7 +118,7 @@ var displayChannels = (token, channels) =>
                                                                                              {
                                                                                                  if (channelIndex >= 0 && channelIndex < channels.length)
                                                                                                  {
-                                                                                                     savedChannelName = channels[channelIndex].name;
+                                                                                                     savedChannelName = folderNameForChannel(channels[channelIndex]);
                                                                                                      images = [ ];
                                                                                                      lastMessage = "";
                                                                                                      fetchImages(token, channels[channelIndex].id, channels[channelIndex].last_message_id);
