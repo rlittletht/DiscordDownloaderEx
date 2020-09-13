@@ -20,7 +20,10 @@ export async function GetChannelMessages(
 
     await limiter.RemoveTokens(1);
 
-    let result: Response = await fetch(`https://discordapp.com/api/channels/${channelId}/messages${query}`,
+    let urlFetch: string = `https://discordapp.com/api/channels/${channelId}/messages${query}`;
+    console.log(`urlFetch: ${urlFetch}`);
+
+    let result: Response = await fetch(urlFetch,
         {
             method: "GET",
             headers: {

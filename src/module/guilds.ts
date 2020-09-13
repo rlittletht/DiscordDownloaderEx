@@ -128,7 +128,6 @@ async function FolderNameForChannel(channel): Promise<string>
 export interface ChannelChoiceInfo
 {
     ChannelId: string;
-    LastMessageId: string;
     FolderName: string;
 };
 
@@ -152,7 +151,6 @@ export async function GetChannelChoiceInfoToDownload(channels): Promise<ChannelC
         return {
             ChannelId: channels[iChannel].id,
             FolderName: folderName,
-            LastMessageId: channels[iChannel].last_message_id
         };
     }
 

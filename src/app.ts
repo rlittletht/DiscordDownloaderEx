@@ -36,7 +36,6 @@ async function login(): Promise<string>
 }
 
 var loops = 0;
-var lastMessage = "";
 var images = [];
 
 async function fetchImages(limiter: TsLimiter.ITsLimiter,
@@ -46,8 +45,9 @@ async function fetchImages(limiter: TsLimiter.ITsLimiter,
     channelfolder: string,
     channellastmessage: string): Promise<void>
 {
+    console.log(`fetchImages: lastmessageid = ${channellastmessage}`);
     loops++;
-    let messageRes: any = await Messages.GetChannelMessages(limiter, token, channelid, lastMessage, null, 2);
+    let messageRes: any = await Messages.GetChannelMessages(limiter, token, channelid, channellastmessage, null, 20);
 
     if (messageRes.code == 50001)
     {
@@ -55,9 +55,14 @@ async function fetchImages(limiter: TsLimiter.ITsLimiter,
         throw `die`;
         // fetchAndDisplayChannels(token, savedServerId)
     }
+
     if (messageRes.length > 0)
     {
-        lastMessage = messageRes[messageRes.length - 1].id;
+        console.log(
+            `messageRes.length=${messageRes.length}; first id=${messageRes[0].id}, last id=${messageRes[messageRes.length
+                - 1].id}`);
+
+        channellastmessage = messageRes[messageRes.length - 1].id;
         for (var m in messageRes)
         {
             for (var a in messageRes[m].attachments)
@@ -69,7 +74,7 @@ async function fetchImages(limiter: TsLimiter.ITsLimiter,
         if (/*images.length <= 50 |*/ messageRes.length > 0)
         {
             console.log(`fetchImages recursion: ${messageRes.length}`);
-            await fetchImages(limiter, token, serverid, channelid, channelfolder, lastMessage);
+            await fetchImages(limiter, token, serverid, channelid, channelfolder, channellastmessage);
         }
         else
         {
@@ -110,15 +115,14 @@ async function main()
     let channelChoiceInfo: Guilds.ChannelChoiceInfo = await Guilds.GetChannelToDownload(_itsLimiter, token, serverId);
 
     console.log(
-        `choice: ${channelChoiceInfo.ChannelId}/${channelChoiceInfo.FolderName}/${channelChoiceInfo.LastMessageId}`);
+        `choice: ${channelChoiceInfo.ChannelId}/${channelChoiceInfo.FolderName}`);
     //fetchAndDisplayChannels(token, userGuilds[serverIndex].id);
-    lastMessage = "";
     await fetchImages(_itsLimiter,
         token,
         serverId,
         channelChoiceInfo.ChannelId,
         channelChoiceInfo.FolderName,
-        channelChoiceInfo.LastMessageId);
+        null /*start from the last*/);
 
     Input.close();
 }
