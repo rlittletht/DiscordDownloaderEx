@@ -86,7 +86,7 @@ async function downloadImages(channelName: string, channelFolder: string, server
     if (resp == "y" || resp == "Y")
     {
         console.log("Downloading...")
-        await Download.StartDownloads(_itsLimiter, images, channelFolder);
+        await Download.DoDownloadsAsync(_itsLimiter, images, channelFolder);
         console.log("All images downloaded, back to channel list!");
     }
     else {}
