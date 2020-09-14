@@ -35,19 +35,16 @@ async function login(): Promise<string>
     return token;
 }
 
-var loops = 0;
-var images = [];
-
 async function fetchImages(limiter: TsLimiter.ITsLimiter,
     token: string,
     serverId: string,
     channelId: string,
     channelFolder: string,
-    messageIdFilterBefore: string): Promise<void>
+    messageIdFilterBefore: string,
+    images: any): Promise<void>
 {
     console.log(`fetchImages: lastmessageid = ${messageIdFilterBefore}`);
-    loops++;
-    let messageRes: any = await Messages.GetChannelMessages(limiter, token, channelId, messageIdFilterBefore, null, 20);
+    let messageRes: any = await Messages.GetChannelMessages(limiter, token, channelId, messageIdFilterBefore, null, 100);
 
     if (messageRes.code == 50001)
     {
@@ -70,15 +67,10 @@ async function fetchImages(limiter: TsLimiter.ITsLimiter,
                 images.push(url)
             }
         }
-        if (/*images.length <= 50 |*/ messageRes.length > 0)
-        {
-            console.log(`fetchImages recursion: ${messageRes.length}`);
-            await fetchImages(limiter, token, serverId, channelId, channelFolder, messageIdFilterBefore);
-        }
+        if (messageRes.length > 0)
+            await fetchImages(limiter, token, serverId, channelId, channelFolder, messageIdFilterBefore, images);
         else
-        {
             await downloadImages(channelId, channelFolder, serverId, images, token);
-        }
     }
     else
     {
@@ -93,9 +85,9 @@ async function downloadImages(channelName: string, channelFolder: string, server
 
     if (resp == "y" || resp == "Y")
     {
-        console.log("> Downloading!")
+        console.log("Downloading!")
         await Download.StartDownloads(_itsLimiter, images, channelFolder);
-        console.log("> All images downloaded, back to channel list!");
+        console.log("All images downloaded, back to channel list!");
     }
     else {}
 }
@@ -133,7 +125,8 @@ async function main()
                 serverId,
                 channelChoiceInfo.ChannelId,
                 channelChoiceInfo.FolderName,
-                null /*start from the last*/);
+                null /*start from the last*/,
+                []);
         }
     }
     Input.close();
