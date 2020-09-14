@@ -9,7 +9,8 @@
     "clean": "tsc --build --clean",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start-tsc": "node ./dist/app.js",
-    "start": "node index.js"
+    "start-js":  "node index.js", 
+    "start": "tsc --build && node ./dist/app.js"
   },
   "author": "rlittletht",
   "license": "mit",
