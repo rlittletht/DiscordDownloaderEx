@@ -5,72 +5,85 @@ import * as fs from 'fs';
 const download = require('image-downloader');
 const downloadDir = process.cwd() + "\\downloads\\";
 
-export function DoDownloadsAsync(limiter: TsLimiter.ITsLimiter, imageList, folder, resolve, reject)
+async function StatAsync(fullpath): Promise<any>
 {
-    var counter = 1;
+    return new Promise<any>((resolve, reject) =>
+    {
+        fs.stat(fullpath,
+            (err, stat) =>
+            {
+                if (err == null)
+                    resolve(stat);
+                else
+                    reject(err);
+            });
+    });
+}
+
+export async function DoDownloadsAsync(limiter: TsLimiter.ITsLimiter, imageList, folder): Promise<void>
+{
+    var counter = 0;
     var maxCounter = imageList.length;
-    fs.mkdir(downloadDir + folder + "\\", (err) =>
-    {
-        if (err)
+    fs.mkdir(downloadDir + folder + "\\",
+        (err) =>
         {
-            if (err.code != 'EEXIST')
-                reject(err);
-        }
-    })
-    imageList.map((i, index) =>
+            if (err)
+            {
+                if (err.code != 'EEXIST')
+                    throw `mkdir failed: ${err}`;
+            }
+        });
+
+    for (var index in imageList)
     {
+        counter++;
+        var i = imageList[index];
+
         var fileName = i.split("/")[i.split("/").length - 1];
         var fullPath = downloadDir + folder + "\\" + fileName;
-        fs.stat(fullPath, async (err, stat) =>
+        var err = null;
+
+        try
         {
-            if (err == null)
+            await StatAsync(fullPath);
+        }
+        catch (errCaught)
+        {
+            err = errCaught;
+        }
+
+        if (err == null)
+        {
+            console.log(`${i} downloaded, already exists: ${counter}/${maxCounter}!`);
+            continue;
+        }
+        else if (err.code == "ENOENT")
+        {
+            await limiter.RemoveTokens(1);
+            let filename = null;
+
+            try
             {
-                console.log(`${i} downloaded, already exists: ${counter}/${maxCounter}!`);
-                counter++;
-                if (counter == maxCounter)
-                {
-                    resolve();
-                }
+                filename = await download
+                    .image({ url: i, dest: downloadDir + folder + "\\" });
             }
-            else if (err.code == "ENOENT")
+            catch (error)
             {
-                await limiter.RemoveTokens(1);
-                download
-                    .image({ url: i, dest: downloadDir + folder + "\\" })
-                    .then((filename) =>
-                    {
-                        console.log(`> ${i} downloaded, finished: ${counter}/${maxCounter}!`);
-                        counter++;
-                        if (counter == maxCounter)
-                        {
-                            resolve();
-                        }
-                    })
-                    .catch((error) =>
-                    {
-                        console.log(`${i} downloaded, failed to download: ${counter}/${maxCounter} [${error}]!`);
-                        counter++;
-                        if (counter == maxCounter)
-                        {
-                            resolve();
-                        }
-                    });
+                console.log(`${i} downloaded, failed to download: ${counter}/${maxCounter} [${error}]!`);
+                continue;
             }
-            else
-            {
-                console.log(`${i} downloaded, already exists: ${counter}/${maxCounter}!`);
-                counter++;
-                if (counter == maxCounter)
-                {
-                    resolve();
-                }
-            }
-        })
-    })
+
+            console.log(`> ${i} downloaded, finished: ${counter}/${maxCounter}!`);
+        }
+        else
+        {
+            console.log(`${i} downloaded, already exists: ${counter}/${maxCounter}!`);
+        }
+    }
 }
 
 export async function StartDownloads(limiter: TsLimiter.ITsLimiter, imageList, folder): Promise<void>
 {
-    return new Promise((resolve, reject) => { DoDownloadsAsync(limiter, imageList, folder, resolve, reject) });
+    return await DoDownloadsAsync(limiter, imageList, folder);
 }
 
