@@ -7,6 +7,7 @@ import * as Download from "./module/download";
 import * as Messages from "./module/messages";
 
 let _itsLimiter: TsLimiter.ITsLimiter = TsLimiter.CreateLimiter(1, 2500);
+let _fVerbose: boolean = false;
 
 /*----------------------------------------------------------------------------
 	%%Function: login
@@ -15,8 +16,8 @@ let _itsLimiter: TsLimiter.ITsLimiter = TsLimiter.CreateLimiter(1, 2500);
 ----------------------------------------------------------------------------*/
 async function login(): Promise<string>
 {
-    let username: string = await Input.input("> Username:");
-    let password: string = await Input.input("> Password:");
+    let username: string = await Input.input("Username: ");
+    let password: string = await Input.input("Password: ");
 
     let token: string = null;
 
@@ -26,12 +27,12 @@ async function login(): Promise<string>
     }
     catch (error)
     {
-        console.log(`> Login unsuccessful! (${error})`);
+        console.log(`Login unsuccessful! (${error})`);
         return await login();
     }
 
     // console.log('\033[2J');
-    console.log(`> Login successful!`);
+    console.log(`Login successful!`);
     return token;
 }
 
@@ -43,21 +44,26 @@ async function fetchImages(limiter: TsLimiter.ITsLimiter,
     messageIdFilterBefore: string,
     images: any): Promise<void>
 {
-    console.log(`fetchImages: lastmessageid = ${messageIdFilterBefore}`);
+    if (_fVerbose)
+        console.log(`fetchImages: lastmessageid = ${messageIdFilterBefore}`);
+
     let messageRes: any = await Messages.GetChannelMessages(limiter, token, channelId, messageIdFilterBefore, null, 100);
 
     if (messageRes.code == 50001)
     {
-        console.error("> You lack the permission to access this channel!");
+        console.error("You lack the permission to access this channel!");
         return;
     }
 
     if (messageRes.length > 0)
     {
-        console.log(
-            `messageRes.length=${messageRes.length}; first id=${messageRes[0].id}, last id=${messageRes[messageRes.length
-                - 1].id}`);
-
+        if (_fVerbose)
+        {
+            console.log(
+                `messageRes.length=${messageRes.length}; first id=${messageRes[0].id}, last id=${messageRes[
+                    messageRes.length
+                    - 1].id}`);
+        }
         messageIdFilterBefore = messageRes[messageRes.length - 1].id;
         for (var m in messageRes)
         {
@@ -81,13 +87,13 @@ async function fetchImages(limiter: TsLimiter.ITsLimiter,
 async function downloadImages(channelName: string, channelFolder: string, serverId: string, images: any, token: string):
     Promise<void>
 {
-    let resp: string = await Input.input(`${images.length} images in found, proceed to download? [Y/N] `);
+    let resp: string = await Input.input(`\n${images.length} images in found, proceed to download? [Y/N] `);
 
     if (resp == "y" || resp == "Y")
     {
-        console.log("Downloading...")
+        console.log("\nDownloading...")
         await Download.DoDownloadsAsync(_itsLimiter, images, channelFolder);
-        console.log("All images downloaded, back to channel list!");
+        console.log("All images downloaded, back to channel list!\n");
     }
     else {}
 }
@@ -99,7 +105,8 @@ async function main()
 {
     let token: string = await login();
 
-    console.log(`> Login successful! Token:${token}`);
+    if (_fVerbose)
+        console.log(`Login successful! Token:${token}`);
 
     while (true)
     {
@@ -108,7 +115,9 @@ async function main()
         if (serverId == null)
             break;
 
-        console.log(`server id to download: ${serverId}`);
+        if (_fVerbose)
+            console.log(`server id to download: ${serverId}`);
+
         while (true)
         {
             let channelChoiceInfo: Guilds.ChannelChoiceInfo =
@@ -117,9 +126,9 @@ async function main()
             if (channelChoiceInfo == null)
                 break;
 
-            console.log(
-                `choice: ${channelChoiceInfo.ChannelId}/${channelChoiceInfo.FolderName}`);
-            //fetchAndDisplayChannels(token, userGuilds[serverIndex].id);
+            if (_fVerbose)
+                console.log(`choice: ${channelChoiceInfo.ChannelId}/${channelChoiceInfo.FolderName}`);
+            
             await fetchImages(_itsLimiter,
                 token,
                 serverId,

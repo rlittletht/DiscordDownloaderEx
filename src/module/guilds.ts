@@ -73,6 +73,8 @@ export async function GetServerIdToDownload(limiter: TsLimiter.ITsLimiter, token
 {
     let userGuilds = await getGuilds(limiter, token);
 
+    console.log("\n");
+
     userGuilds.push({ name: "User channels", id: "!!user" });
     for (var i in userGuilds)
     {
@@ -120,7 +122,7 @@ async function FolderNameForChannel(channel): Promise<string>
     if (channel.name)
         return channel.name;
 
-    let folderName: string = await Input.input(`Cannot automatically generate folder name for channel. Destination folder name? `);
+    let folderName: string = await Input.input(`\nCannot automatically generate folder name for channel. Destination folder name? `);
 
     return folderName;
 }
@@ -136,12 +138,14 @@ export interface ChannelChoiceInfo
 ----------------------------------------------------------------------------*/
 export async function GetChannelChoiceInfoToDownload(channels): Promise<ChannelChoiceInfo>
 {
+    console.log("\n");
+
     for (var c in channels)
     {
         console.log(`[${c}] - ${DescribeChannel(channels[c])}`);
     }
 
-    let channelIndex: string = await Input.input(`What channel do you want to download from? [0-${channels.length - 1}, -1 to return]`);
+    let channelIndex: string = await Input.input(`What channel do you want to download from? [0-${channels.length - 1}, -1 to return] `);
 
     let iChannel: number = parseInt(channelIndex);
 
