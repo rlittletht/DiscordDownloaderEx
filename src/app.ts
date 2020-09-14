@@ -52,8 +52,7 @@ async function fetchImages(limiter: TsLimiter.ITsLimiter,
     if (messageRes.code == 50001)
     {
         console.error("> You lack the permission to access this channel!");
-        throw `die`;
-        // fetchAndDisplayChannels(token, savedServerId)
+        return;
     }
 
     if (messageRes.length > 0)
@@ -109,21 +108,34 @@ async function main()
     let token: string = await login();
 
     console.log(`> Login successful! Token:${token}`);
-    let serverId: string = await Guilds.GetServerIdToDownload(_itsLimiter, token);
 
-    console.log(`server id to download: ${serverId}`);
-    let channelChoiceInfo: Guilds.ChannelChoiceInfo = await Guilds.GetChannelToDownload(_itsLimiter, token, serverId);
+    while (true)
+    {
+        let serverId: string = await Guilds.GetServerIdToDownload(_itsLimiter, token);
 
-    console.log(
-        `choice: ${channelChoiceInfo.ChannelId}/${channelChoiceInfo.FolderName}`);
-    //fetchAndDisplayChannels(token, userGuilds[serverIndex].id);
-    await fetchImages(_itsLimiter,
-        token,
-        serverId,
-        channelChoiceInfo.ChannelId,
-        channelChoiceInfo.FolderName,
-        null /*start from the last*/);
+        if (serverId == null)
+            break;
 
+        console.log(`server id to download: ${serverId}`);
+        while (true)
+        {
+            let channelChoiceInfo: Guilds.ChannelChoiceInfo =
+                await Guilds.GetChannelToDownload(_itsLimiter, token, serverId);
+
+            if (channelChoiceInfo == null)
+                break;
+
+            console.log(
+                `choice: ${channelChoiceInfo.ChannelId}/${channelChoiceInfo.FolderName}`);
+            //fetchAndDisplayChannels(token, userGuilds[serverIndex].id);
+            await fetchImages(_itsLimiter,
+                token,
+                serverId,
+                channelChoiceInfo.ChannelId,
+                channelChoiceInfo.FolderName,
+                null /*start from the last*/);
+        }
+    }
     Input.close();
 }
 

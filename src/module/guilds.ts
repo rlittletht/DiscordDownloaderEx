@@ -79,7 +79,7 @@ export async function GetServerIdToDownload(limiter: TsLimiter.ITsLimiter, token
         console.log(`[${i}] - ${userGuilds[i].name}`);
     }
 
-    let serverIndex: string = await Input.input(`Which server do you want to download? [0-${userGuilds.length - 1}] `);
+    let serverIndex: string = await Input.input(`Which server do you want to download? [0-${userGuilds.length - 1}, -1 to end] `);
 
     let iServer: number = parseInt(serverIndex);
 
@@ -141,7 +141,7 @@ export async function GetChannelChoiceInfoToDownload(channels): Promise<ChannelC
         console.log(`[${c}] - ${DescribeChannel(channels[c])}`);
     }
 
-    let channelIndex: string = await Input.input(`What channel do you want to download from? [0-${channels.length - 1}]`);
+    let channelIndex: string = await Input.input(`What channel do you want to download from? [0-${channels.length - 1}, -1 to return]`);
 
     let iChannel: number = parseInt(channelIndex);
 
